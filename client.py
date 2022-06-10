@@ -129,8 +129,12 @@ def build_update() -> str:
 
 async def main():
     global game_state, player
-    uri = "ws://localhost:8765"
 
+    addr = input("Input server address [ip:port] (blank for locahost:8765): ")
+    if addr == "":
+        uri = "ws://localhost:8765"
+    else:
+        uri = "ws://" + addr
 
     async with websockets.connect(uri) as websocket:
         await websocket.send(GET_PLAYER)

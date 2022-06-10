@@ -39,7 +39,13 @@ async def game(websocket):
 
 
 async def main():
-    async with websockets.serve(game, "localhost", 8765):
+    inp = input("Enter [ip:port] (blank for localhost:8765): ")
+    if inp == "":
+        inp = "locahost:8765"
+    host = inp.split(":")[0]
+    port = int(inp.split(":")[1])
+
+    async with websockets.serve(game, host, port):
         await asyncio.Future()  # run forever
 
 if __name__ == "__main__":
