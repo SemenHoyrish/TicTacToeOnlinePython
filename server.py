@@ -1,3 +1,4 @@
+import sys
 import asyncio
 import websockets
 import json
@@ -14,6 +15,9 @@ game_state.turn = 1
 player_1 = False
 player_2 = False
 
+HOST = ""
+PORT = 0
+
 async def game(websocket):
     global game_state, player_1, player_2
     request = await websocket.recv()
@@ -23,9 +27,13 @@ async def game(websocket):
             print("Player 1 connected!")
             player_1 = True
         elif not player_2:
-            await websocket.send("2")
-            print("Player 2 connected!")
-            player_2 = True
+            if game_state.turn == 0:
+                await websocket.send("2")
+                print("Player 2 connected!")
+                player_2 = True
+            else:
+                await websocket.send("-1")
+                print("Player 2 should wait")
         else:
             await websocket.send("-1")
     elif request.startswith("get_current_state"):
@@ -39,14 +47,32 @@ async def game(websocket):
 
 
 async def main():
-    inp = input("Enter [ip:port] (blank for localhost:8765): ")
-    if inp == "":
-        inp = "locahost:8765"
-    host = inp.split(":")[0]
-    port = int(inp.split(":")[1])
+    global HOST, PORT
+    if HOST == "" and PORT == 0:
+        inp = input("Enter [ip:port] (blank for localhost:8765): ")
+        if inp == "":
+            HOST = "locahost"
+            PORT = 8765
+        else:
+            HOST = inp.split(":")[0]
+            PORT = int(inp.split(":")[1])
+    if HOST == "":
+        HOST = "localhost"
+    if PORT == 0:
+        PORT = 0
 
-    async with websockets.serve(game, host, port):
+    async with websockets.serve(game, HOST, PORT):
         await asyncio.Future()  # run forever
 
 if __name__ == "__main__":
+    argv = sys.argv
+    if "--host" in argv:
+        HOST = argv[argv.index("--host") + 1]
+    if "-h" in argv:
+        HOST = argv[argv.index("-h") + 1]
+    if "--port" in argv:
+        PORT = argv[argv.index("--port") + 1]
+    if "-p" in argv:
+        PORT = argv[argv.index("-p") + 1]
+
     asyncio.run(main())
