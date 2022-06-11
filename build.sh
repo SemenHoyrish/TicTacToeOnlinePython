@@ -14,6 +14,7 @@ then
       echo "Directory is Empty. "
     fi
 else
+    mkdir build
     echo "Directory 'build' created. "
 fi
 
