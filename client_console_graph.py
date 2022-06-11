@@ -315,8 +315,6 @@ async def main():
             print("It`s TIE!!!")
             break
 
-        # if pos.x == 88:
-        #     break
 
 if __name__ == "__main__":
     argv = sys.argv
@@ -333,8 +331,9 @@ if __name__ == "__main__":
         PORT = argv[argv.index("--port") + 1]
     if "-p" in argv:
         PORT = argv[argv.index("-p") + 1]
-    #
+    
     # print(HOST)
     # print(PORT)
 
     asyncio.run(main())
+    input("Enter to quit from the game...")
